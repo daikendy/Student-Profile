@@ -10,8 +10,11 @@ public class Main {
 
             switch (choice) {
                 case 1 -> student.addStudent();
-                case 2 -> student.viewAllStudents();
-                case 3 -> {
+                case 2 -> student.studentInfo();
+                case 3 -> student.updateStudent();
+                case 4 -> student.deleteStudent();
+                case 5 -> student.viewAllStudents();
+                case 6 -> {
                     System.out.println("Exiting program. Goodbye!");
                     running = false;
                 }
