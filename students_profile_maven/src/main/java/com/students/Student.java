@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Column;
+import java.sql.Date;
 
 @Entity
 @Table(name = "student")
@@ -21,6 +22,17 @@ public class Student {
     
     @Column(name = "program")
     private String program;
+
+    @Column(name = "registration_date")
+    private Date registrationDate;
+
+    public Date getRegistrationDate() {
+        return registrationDate;
+    }
+
+    public void setRegistrationDate(Date registrationDate) {
+        this.registrationDate = registrationDate;
+    }
 
     public String getStudentId() {
         return studentId;
@@ -57,18 +69,19 @@ public class Student {
     public Student() {
     }
 
-    public Student(String studentId, String name, int age, String program){
+    public Student(String studentId, String name, int age, String program, Date registrationDate){
         this.studentId = studentId;
         this.name = name;
         this.age = age;
         this.program = program;
+        this.registrationDate = registrationDate;
     }
 
     public void printProfile(){
         System.out.println("Student ID: " + studentId + "\n" +
                 "Name: " + name + "\n" +
                 "Age: " + age + "\n" +
-                "Program: " + program + "\n" +
+                "Program: " + program + "\n" + "Registration Date: " + registrationDate + "\n" +
                 "----------------------------------------------------");
     }
 }
