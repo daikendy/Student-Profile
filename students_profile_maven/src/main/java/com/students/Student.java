@@ -2,7 +2,10 @@ package com.students;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import java.sql.Date;
 
@@ -26,8 +29,31 @@ public class Student {
     @Column(name = "registration_date")
     private Date registrationDate;
 
+    @Column(name = "last_updated_date")
+    private Date lastUpdated;
+
+    public Date getLastUpdated() {
+        return lastUpdated;
+    }
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "address_id", referencedColumnName = "roll_number")
+    private Address address;
+
+    public void setLastUpdated(Date lastUpdated) {
+        this.lastUpdated = lastUpdated;
+    }
+
     public Date getRegistrationDate() {
         return registrationDate;
+    }
+
+    public Address getAddress() {
+        return address;
+    }
+
+    public void setAddress(Address address) {
+        this.address = address;
     }
 
     public void setRegistrationDate(Date registrationDate) {
@@ -82,6 +108,14 @@ public class Student {
                 "Name: " + name + "\n" +
                 "Age: " + age + "\n" +
                 "Program: " + program + "\n" + "Registration Date: " + registrationDate + "\n" +
+                "----------------------------------------------------");
+    }
+    public void printUpdatedProfile(){
+        System.out.println("Student ID: " + studentId + "\n" +
+                "Name: " + name + "\n" +
+                "Age: " + age + "\n" +
+                "Program: " + program + "\n" + "Registration Date: " + registrationDate + "\n" +
+                "Last Updated Date: " + lastUpdated + "\n" +
                 "----------------------------------------------------");
     }
 }
