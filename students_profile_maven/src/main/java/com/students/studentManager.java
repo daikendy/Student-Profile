@@ -18,7 +18,7 @@ class studentManager {
     }
 
     public void addStudent() {
-        Session session = HibernateUtil.getSessionFactory().openSession();
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
         session.beginTransaction();
         System.out.println();
 
@@ -33,7 +33,6 @@ class studentManager {
             session.close();
             return;
         }
-
         String name = InputValidator.getStringInput("Enter Name: ");
         int age = InputValidator.getIntInput("Enter Age: ");
 
@@ -46,7 +45,10 @@ class studentManager {
         System.out.println();
         System.out.println("-----Successfully added student profile-----");
         newStudent.printProfile();
-        session.close();
+
+    } catch (Exception e) {
+            System.out.println("Error adding student profile: " + e.getMessage());
+        }
     }
 
     public void studentInfo() {
@@ -66,50 +68,59 @@ class studentManager {
         }
     }
 
-    public void updateStudent() {
-        // Implementation for updating a student's info
-        String studentId = InputValidator.getStringInput("Enter Student ID to update: ");
+public void updateStudent() {
+    String studentId = InputValidator.getStringInput("Enter Student ID to update: ");
 
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            Student student = session.get(Student.class, studentId);
-            if (student != null) {
-                System.out.println("\n--- Update Student Profile ---");
-                student.printProfile();
-
-                String newName = InputValidator.getBlankStringInput("Enter new Name (leave blank to keep unchanged): ");
-                if (!newName.isBlank()) {
-                    student.setName(newName);
-                }
-
-                int newAge = InputValidator.getBlankIntInput("Enter new Age (leave blank to keep unchanged): ");
-                if (newAge != -1) {
-                    student.setAge(newAge);
-                }
-
-                String newProgram = InputValidator.getBlankStringInput("Enter new Program (leave blank to keep unchanged): ");
-                if (!newProgram.isBlank()) {
-                    student.setProgram(newProgram);
-                }
-
-                System.out.println();
-                session.beginTransaction();
-                System.out.println();
-
-                session.merge(student);
-                session.getTransaction().commit();
-                System.out.println();
-
-                System.out.println("------Student profile updated successfully------");
-                student.printProfile();
-
-            } else {
-                System.out.println();
-                System.out.println("Student with ID " + studentId + " not found.");
-            }
-        } catch (Exception e) {
-            System.out.println("Error updating student profile: " + e.getMessage());
+    try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+        Student student = session.get(Student.class, studentId);
+        if (student == null) {
+            System.out.println("Student with ID " + studentId + " not found.");
+            return;
         }
+
+        System.out.println("\n--- Update Student Profile ---");
+        student.printProfile();
+
+        // === BASIC INFO UPDATE ===
+        String newName = InputValidator.getBlankStringInput("Enter new Name (leave blank to keep unchanged): ");
+        if (!newName.isBlank()) student.setName(newName);
+
+        int newAge = InputValidator.getBlankIntInput("Enter new Age (leave blank to keep unchanged): ");
+        if (newAge != -1) student.setAge(newAge);
+
+        String newProgram = InputValidator.getBlankStringInput("Enter new Program (leave blank to keep unchanged): ");
+        if (!newProgram.isBlank()) student.setProgram(newProgram);
+
+        student.setLastUpdated(new java.sql.Date(System.currentTimeMillis()));
+
+        // === CONTACT INFO UPDATE ===
+        String confirmation = InputValidator.getStringInput("Update your Address Info? (yes/no): ");
+        if (confirmation.equalsIgnoreCase("yes")) {
+            Address address = student.getAddress(); // get existing or null
+            if (address == null) {
+                address = new Address(); // create only if needed
+            }
+
+            address.setCity(InputValidator.getStringInput("Enter your City: "));
+            address.setProvince(InputValidator.getStringInput("Enter your Province: "));
+            address.setState(InputValidator.getStringInput("Enter your State: "));
+            student.setAddress(address); // Hibernate will cascade persist/update
+        }
+
+        // === SAVE CHANGES ===
+        session.beginTransaction();
+        session.merge(student); // cascade handles address automatically
+        session.getTransaction().commit();
+
+        System.out.println("------Student profile updated successfully------");
+        student.printUpdatedProfile();
+
+    } catch (Exception e) {
+        System.out.println("Error updating student profile: " + e.getMessage());
+        e.printStackTrace();
     }
+}
+
 
     public void deleteStudent() {
         // Implementation for deleting a student's info
@@ -142,7 +153,7 @@ class studentManager {
 
 public void viewAllStudents() {
     try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-        List<Student> studentList = session.createQuery("from Student", Student.class).list();
+        List<Student> studentList = session.createQuery("from Student order by studentId desc", Student.class).list();
 
         if (studentList.isEmpty()) {
             System.out.println("No student profiles found in the database.");
@@ -154,7 +165,6 @@ public void viewAllStudents() {
         }
     } catch (Exception e) {
         System.out.println("Error retrieving student profiles: " + e.getMessage());
+        }
     }
-}
-
 }
