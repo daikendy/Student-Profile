@@ -57,8 +57,10 @@ class studentManager {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Student student = session.get(Student.class, studentId);
             if (student != null) {
-                System.out.println("\n--- Student Profile ---");
+                System.out.println("\n------ Student Profile ------");
                 student.printProfile();
+                System.out.println();
+                student.getAddress().displayAddress();
             } else {
                 System.out.println();
                 System.out.println("Student with ID " + studentId + " not found.");
@@ -162,7 +164,7 @@ public void updateStudent() {
 
 public void viewAllStudents() {
     try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-        List<Student> studentList = session.createQuery("from Student order by studentId desc", Student.class).list();
+        List<Student> studentList = session.createQuery("from Student order by name asc", Student.class).list();
 
         if (studentList.isEmpty()) {
             System.out.println("No student profiles found in the database.");
