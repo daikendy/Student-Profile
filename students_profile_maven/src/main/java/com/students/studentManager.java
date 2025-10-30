@@ -104,6 +104,7 @@ public void updateStudent() {
             address.setCity(InputValidator.getStringInput("Enter your City: "));
             address.setProvince(InputValidator.getStringInput("Enter your Province: "));
             address.setState(InputValidator.getStringInput("Enter your State: "));
+            address.setStudent(student); // set back-reference
             student.setAddress(address); // Hibernate will cascade persist/update
         }
 
@@ -112,8 +113,16 @@ public void updateStudent() {
         session.merge(student); // cascade handles address automatically
         session.getTransaction().commit();
 
-        System.out.println("------Student profile updated successfully------");
-        student.printUpdatedProfile();
+        System.out.println();
+            System.out.println("------Student profile updated successfully------");
+            student.printUpdatedProfile();
+
+        System.out.println();
+            String confirmations = confirmation;
+                if(confirmations.equalsIgnoreCase("Yes")) {
+                student.getAddress().displayAddress();
+        }
+
 
     } catch (Exception e) {
         System.out.println("Error updating student profile: " + e.getMessage());
