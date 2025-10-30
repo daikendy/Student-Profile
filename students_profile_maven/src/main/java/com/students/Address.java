@@ -1,7 +1,5 @@
 package com.students;
 
-
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -22,11 +20,17 @@ public class Address {
   private String province;
   private String state;
 
-  @OneToOne(mappedBy = "address", cascade = CascadeType.ALL)
+  @OneToOne(mappedBy = "address")
   private Student student;
 
   // Getters and setters
 
+  public Student getStudent() {
+    return student;
+  }
+  public void setStudent(Student student) {
+    this.student = student;
+  }
   public long getRollId() {
     return rollId;
   }
@@ -58,5 +62,13 @@ public class Address {
     this.city = city;
     this.province = province;
     this.state = state;
+  }
+
+  public void displayAddress() {
+    System.out.println("------Updated Address Details:------");
+    System.out.println("City: " + city);
+    System.out.println("Province: " + province);
+    System.out.println("State: " + state);
+    System.out.println("----------------------------------------------------");
   }
 }
