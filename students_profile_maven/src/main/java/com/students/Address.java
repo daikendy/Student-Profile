@@ -65,7 +65,7 @@ public class Address {
   }
 
   public void displayAddress() {
-    System.out.println("------Updated Address Details:------");
+    System.out.println("------ Address Details: ------");
     System.out.println("City: " + city);
     System.out.println("Province: " + province);
     System.out.println("State: " + state);
